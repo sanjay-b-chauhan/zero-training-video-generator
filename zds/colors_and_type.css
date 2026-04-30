@@ -1,0 +1,417 @@
+/* =========================================================
+   zero — Design System Foundations
+   Education, designed for an AI-native future
+   ========================================================= */
+
+/* --- FONTS ---------------------------------------------------------------
+   The Figma uses: Faculty Glyphic (display serif), Google Sans Flex (UI),
+   Google Sans Code / PP Supply Mono (mono + labels), Fustat (secondary UI).
+
+   Local files shipped in /fonts:
+     • Faculty Glyphic Regular                              (display serif ✅)
+     • Google Sans Flex Variable (GRAD/ROND/opsz/slnt/wdth/wght) (UI sans ✅)
+     • PP Supply Mono Regular                               (mono ✅)
+     • PP Supply Sans Ultralight                            (alt display ✅)
+
+   Still substituted (the user has not provided these):
+     Google Sans Code → falls back to PP Supply Mono / JetBrains Mono
+     Fustat           → Fustat (Google Fonts ✅)
+   -------------------------------------------------------------------- */
+
+/* Local @font-face declarations removed — we don't ship the local /fonts/*
+   files in this static bundle. The Google Fonts @import below loads the
+   same families from CDN, which works for both local dev and GitHub Pages. */
+
+/* Primary families via Google Fonts CDN — ensures availability even where
+   local /fonts/* files aren't shipped (standalone bundle, remote embeds). */
+@import url('https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Google+Sans+Flex:opsz,wght@6..144,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Fustat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ---------- TYPE FAMILIES ---------- */
+  --font-display: "Faculty Glyphic", ui-serif, Georgia, serif;
+  --font-sans:    "Google Sans Flex", "Inter Tight", ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono:    "PP Supply Mono", "Google Sans Code", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-alt:     "PP Supply Sans", "Fustat", var(--font-sans);
+
+  /* ---------- TYPE SCALE (px) ----------
+     Desktop-first. Display ramp uses the glyphic serif; body uses sans. */
+  --fs-display-2xl: 120px;  /* hero */
+  --fs-display-xl:  88px;
+  --fs-display-lg:  64px;
+  --fs-display-md:  48px;   /* slide title; screen hero */
+  --fs-display-sm:  38px;
+  --fs-h1:          36px;
+  --fs-h2:          28px;
+  --fs-h3:          24px;
+  --fs-body-lg:     22px;
+  --fs-body:        18px;
+  --fs-body-sm:     16px;
+  --fs-caption:     14px;
+  --fs-micro:       12px;
+
+  /* ---------- LINE HEIGHTS ---------- */
+  --lh-tight:   1.0;
+  --lh-display: 1.1;
+  --lh-heading: 1.3;
+  --lh-body:    1.4;
+  --lh-loose:   1.6;
+
+  /* ---------- LETTER SPACING ----------
+     Rule: −2% across the entire UI, on every size.
+     Mono labels override to +4% for caps readability. */
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.02em;
+  --tracking-body:    -0.02em;
+  --tracking-small:   -0.02em;
+  --tracking-mono:    -0.01em;
+  --tracking-caps:     0.08em;
+
+  /* ---------- FOREGROUND (Light mode — default) ----------
+     Primary ink is a warm near-black (rgb 31,29,30) — never pure #000.
+     Background ink tints: 5% / 10% / 40% / 60% for step-down text. */
+  --fg-1: rgb(31, 29, 30);                  /* primary ink */
+  --fg-2: rgba(31, 29, 30, 0.70);           /* secondary */
+  --fg-3: rgba(31, 29, 30, 0.50);           /* tertiary / labels */
+  --fg-4: rgba(31, 29, 30, 0.30);           /* disabled / hint */
+  --fg-warm: rgb(42, 33, 24);               /* warm ink used on cream */
+  --fg-inverse: rgb(255, 255, 255);         /* on dark */
+
+  /* ---------- NEUTRAL INK SCALE (10 steps) ----------
+     Canonical warm-grey ramp derived from the two inks the Figma uses most:
+     ink 1000 = rgb(18,18,18)  (bg-deepest / cold near-black)
+     ink 950  = rgb(31,29,30)  (PRIMARY ink — warm near-black, 2689× in file)
+     ink 900  = rgb(42,33,24)  (warm brown ink used on cream, 1638×)
+     Everything else is a tonal step between these and paper white.
+     Use these in place of ad-hoc greys. */
+  --ink-0:    rgb(255, 255, 255);
+  --ink-50:   rgb(249, 248, 246);           /* paper */
+  --ink-100:  rgb(246, 245, 243);           /* app canvas */
+  --ink-150:  rgb(242, 240, 237);           /* cream */
+  --ink-200:  rgb(232, 230, 226);           /* hairline wash */
+  --ink-300:  rgb(217, 217, 217);           /* divider / disabled bg */
+  --ink-400:  rgb(170, 168, 165);           /* muted label */
+  --ink-500:  rgb(120, 118, 115);           /* secondary text alt */
+  --ink-700:  rgb(56, 58, 64);              /* cool slate (code blocks) */
+  --ink-800:  rgb(42, 33, 24);              /* warm brown ink on cream */
+  --ink-900:  rgb(31, 29, 30);              /* PRIMARY ink */
+  --ink-1000: rgb(18, 18, 18);              /* deepest / immersive bg */
+
+  /* ---------- SURFACE / BACKGROUND (aliases to the scale) ----------
+     Four discrete surface levels, nothing in between. */
+  --bg-surface:  var(--ink-0);              /* raised — cards, modals */
+  --bg-app:      var(--ink-100);            /* app canvas (default) */
+  --bg-cream:    var(--ink-150);            /* deeper cream well */
+  --bg-dark:     var(--ink-900);            /* full-dark surface */
+  --bg-deepest:  var(--ink-1000);           /* deepest — immersive */
+
+  /* ---------- SURFACE STATES ----------
+     Transparent washes so they compose over any surface. */
+  --bg-sunken: rgba(31, 29, 30, 0.03);
+  --bg-hover:  rgba(31, 29, 30, 0.05);
+  --bg-press:  rgba(31, 29, 30, 0.08);
+
+  /* ---------- BORDERS ---------- */
+  --border-hair:    rgba(31, 29, 30, 0.06);
+  --border-subtle:  rgba(31, 29, 30, 0.10);
+  --border-strong:  rgba(31, 29, 30, 0.20);
+  --border-focus:   rgb(73, 186, 97);
+
+  /* ---------- BRAND — GREEN SCALE ----------
+     zero's brand green is a DEEP FOREST used as ink (headings, dark
+     surfaces, cursor trail) paired with a bright mint/lime used as
+     highlight + signal. 9-step scale with perceptually distinct stops:
+
+       forest 900  rgb(12, 45, 30)   — darkest forest ink
+       forest 800  rgb(24, 67, 47)   — primary heading ink (from hero)
+       forest 700  rgb(42, 110, 72)  — medium forest
+       green  500  rgb(73, 186, 97)  — PRIMARY CTA / success
+       green  400  rgb(126, 215, 145)— tint / inline hover
+       lime   300  rgb(172, 245, 110)— active pill, splash
+       mint   200  rgb(164, 244, 178)— text HIGHLIGHTER (hero "describes")
+       mint   100  rgb(210, 250, 220)— shadow halo / soft fill
+       mint    50  rgb(232, 249, 237)— subtle wash
+     Always: forest for ink, green-500 for CTA, mint-200 for highlights. */
+
+  --green-900: rgb(12, 45, 30);             /* darkest forest, on-dark ink */
+  --green-800: rgb(24, 67, 47);             /* FOREST ink (hero headings) */
+  --green-700: rgb(42, 110, 72);            /* medium forest */
+  --green-500: rgb(73, 186, 97);            /* PRIMARY brand green */
+  --green-400: rgb(126, 215, 145);          /* lighter variant */
+  --green-300: rgb(172, 245, 110);          /* lime — active pill */
+  --green-200: rgb(164, 244, 178);          /* mint highlighter */
+  --green-100: rgb(210, 250, 220);          /* soft mint fill */
+  --green-50:  rgb(232, 249, 237);          /* subtle wash */
+  --green-neon: rgb(51, 255, 173);          /* neon aqua edge, sparingly */
+
+  /* Legacy aliases (kept so existing cards/UI keep working) */
+  --brand-forest:      var(--green-800);
+  --brand-green:       var(--green-500);
+  --brand-green-soft:  var(--green-400);
+  --brand-lime:        var(--green-300);
+  --brand-mint:        var(--green-200);
+  --brand-highlighter: var(--green-200);
+  --brand-aqua:        var(--green-neon);
+
+  /* ---------- SEMANTIC ACCENTS ----------
+     Pure tonal shades keyed off zero's brand hexes.
+     Four tiers per role on cream-warm surfaces:
+       -ink    : text on -soft / -tint chips
+       -solid  : filled badge / icon / solid CTA
+       -soft   : chip background (light — reads on cream)
+       -tint   : paler wash for row backgrounds / hover */
+
+  /* SUCCESS — brand green (49BA61) */
+  --success-ink:   rgb(17, 60, 30);
+  --success-solid: rgb(73, 186, 97);
+  --success-soft:  rgb(219, 241, 223);
+  --success-tint:  rgb(240, 249, 242);
+
+  /* INFO — brand blue (3582FF) */
+  --info-ink:      rgb(13, 50, 128);
+  --info-solid:    rgb(53, 130, 255);
+  --info-soft:     rgb(215, 230, 255);
+  --info-tint:     rgb(239, 245, 255);
+
+  /* WARNING — brand yellow (FFB73A) */
+  --warning-ink:   rgb(102, 62, 0);
+  --warning-solid: rgb(255, 183, 58);
+  --warning-soft:  rgb(255, 241, 216);
+  --warning-tint:  rgb(255, 249, 239);
+
+  /* DANGER — brand red (FE4938) */
+  --danger-ink:   rgb(122, 22, 12);
+  --danger-solid: rgb(254, 73, 56);
+  --danger-soft:  rgb(255, 219, 215);
+  --danger-tint:  rgb(255, 240, 239);
+
+  /* Legacy aliases */
+  --success-fill:  var(--success-solid);
+  --info-fill:     var(--info-solid);
+  --warning-fill:  var(--warning-solid);
+  --danger-fill:   var(--danger-solid);
+  --accent-blue:   var(--info-solid);
+  --accent-red:    var(--danger-solid);
+  --accent-cream-stroke: rgb(255, 244, 192);
+  --accent-neutral: rgb(239, 243, 247);
+  --success: var(--success-solid);
+  --warning: var(--warning-solid);
+  --danger:  var(--danger-solid);
+  --info:    var(--info-solid);
+
+  /* ---------- SHADOWS ----------
+     Airbnb-style: soft, diffuse, multi-layer. Low opacity,
+     generous blur, subtle vertical offset. Never tinted/green. */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04),
+               0 0 1px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04),
+               0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05),
+               0 12px 24px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.06),
+               0 24px 48px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.07),
+               0 40px 80px rgba(0, 0, 0, 0.08);
+  /* Inner glow that wraps pill avatars / streak chips */
+  --shadow-inset-ring: inset 0 0 0 4px rgba(31, 29, 30, 0.04);
+
+  /* ---------- RADII ----------
+     Pragmatic 5-step scale. 32px is the brand default for cards/screens.
+     No nano 4px or oversized 40px — they were never used in practice. */
+  --radius-sm:   8px;     /* input, small button                */
+  --radius-md:   12px;    /* chip, menu item                    */
+  --radius-base: 16px;    /* default card inner                 */
+  --radius-lg:   20px;    /* secondary card                     */
+  --radius-xl:   24px;    /* card / sheet                       */
+  --radius-2xl:  32px;    /* PRIMARY — zero screens, hero cards */
+  --radius-pill: 999px;
+  /* Legacy */
+  --radius-xs:   var(--radius-sm);
+  --radius-3xl:  var(--radius-2xl);
+
+  /* ---------- SPACING (8-point, with 4px for tight metric work) ---------- */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-7:  32px;
+  --s-8:  40px;
+  --s-9:  48px;
+  --s-10: 60px;
+  --s-11: 80px;
+  --s-12: 100px;
+
+  /* ---------- MOTION ---------- */
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-cinema:   cubic-bezier(0.16, 1, 0.30, 1);    /* award-grade ease-out, long tail */
+  --ease-block:    cubic-bezier(0.32, 0.72, 0, 1);    /* smart-animate spring (no overshoot) */
+  --dur-instant:   100ms;
+  --dur-fast:      180ms;
+  --dur-base:      260ms;
+  --dur-slow:      420ms;
+  --dur-cinematic: 720ms;
+  --dur-section:   820ms;     /* section reveal */
+  --dur-word:      700ms;     /* per-word resolve */
+  --stagger-word:   60ms;     /* between word starts */
+  --dur-block:     520ms;     /* smart-animate block transition */
+  --blur-words:    12px;      /* AI text-in starting blur */
+}
+
+/* =========================================================
+   SEMANTIC TYPE ROLES
+   Use these class names in markup where possible.
+   ========================================================= */
+
+.type-hero {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display-xl);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg-1);
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display-md);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg-1);
+}
+
+.type-h1 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--fs-h1);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--fg-1);
+}
+
+.type-h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--fg-1);
+}
+
+.type-h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--fg-1);
+}
+
+.type-body-lg {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-loose);
+  color: var(--fg-2);
+}
+
+.type-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+}
+
+.type-body-sm {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+
+.type-caption {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body);
+  color: var(--fg-3);
+}
+
+.type-micro {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: var(--lh-body);
+  color: var(--fg-3);
+}
+
+/* Mono label — the recurring "SCENARIO 01" / "01 / 09 OBJECTIVES" tag. */
+.type-mono-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--fg-3);
+  font-feature-settings: "zero" 0, "ss01" 0;  /* O-shaped (non-slashed) zero */
+}
+
+.type-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-body-sm);
+  letter-spacing: var(--tracking-mono);
+  color: var(--fg-2);
+  font-feature-settings: "zero" 0, "ss01" 0;
+}
+
+/* =========================================================
+   ELEMENT DEFAULTS — opt in with the `zero-theme` class
+   ========================================================= */
+
+.zero-theme {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-app);
+  font-feature-settings: "ss01", "cv11"; /* open a/g if the font supports it */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.zero-theme h1 { font: 500 var(--fs-display-md)/var(--lh-heading) var(--font-display); letter-spacing: var(--tracking-display); color: var(--fg-1); margin: 0; }
+.zero-theme h2 { font: 600 var(--fs-h1)/var(--lh-heading) var(--font-sans); letter-spacing: var(--tracking-heading); color: var(--fg-1); margin: 0; }
+.zero-theme h3 { font: 600 var(--fs-h2)/var(--lh-heading) var(--font-sans); letter-spacing: var(--tracking-heading); color: var(--fg-1); margin: 0; }
+.zero-theme h4 { font: 600 var(--fs-h3)/var(--lh-heading) var(--font-sans); letter-spacing: var(--tracking-heading); color: var(--fg-1); margin: 0; }
+.zero-theme p  { font: 400 var(--fs-body)/var(--lh-body) var(--font-sans); color: var(--fg-2); margin: 0; }
+.zero-theme code, .zero-theme pre { font-family: var(--font-mono); font-size: var(--fs-body-sm); }
+
+/* =========================================================
+   DARK / ON-DARK VARIANT
+   The marketing homescreen uses a full-bleed dark mode with inverted
+   ink. Apply `.zero-theme.on-dark` or just `.on-dark` to flip.
+   ========================================================= */
+
+.on-dark {
+  --fg-1: rgb(255, 255, 255);
+  --fg-2: rgba(255, 255, 255, 0.75);
+  --fg-3: rgba(255, 255, 255, 0.50);
+  --fg-4: rgba(255, 255, 255, 0.30);
+  --fg-warm: rgb(255, 255, 255);
+  --bg-app: rgb(31, 29, 30);
+  --bg-surface: rgba(255, 255, 255, 0.05);
+  --bg-sunken: rgba(255, 255, 255, 0.04);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  --bg-press: rgba(255, 255, 255, 0.12);
+  --border-hair: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.30);
+  color: var(--fg-1);
+  background: var(--bg-app);
+}

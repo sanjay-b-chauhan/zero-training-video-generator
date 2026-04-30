@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zero · Block 3 · The 5 Whys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root {
+  --cream: rgb(246,245,243); --cream-2: rgb(242,240,237); --bone: rgb(249,248,246); --paper: rgb(255,255,255);
+  --ink: rgb(31,29,30); --ink-2: rgba(31,29,30,0.78); --ink-soft: rgba(31,29,30,0.55); --muted: rgba(31,29,30,0.32);
+  --line: rgba(31,29,30,0.12); --line-soft: rgba(31,29,30,0.06);
+  --coral: rgb(24,67,47); --coral-2: rgb(12,45,30); --coral-bg: rgb(232,249,237);
+  --olive: rgb(73,186,97); --olive-2: rgb(42,110,72); --olive-tint: rgba(73,186,97,0.14);
+  --red: rgb(254,73,56); --red-tint: rgba(254,73,56,0.12);
+  --mint-200: rgb(164,244,178); --mint-100: rgb(210,250,220);
+  --serif: 'Faculty Glyphic', ui-serif, Georgia, serif;
+  --sans: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --ease: cubic-bezier(.22,1,.36,1); --ease-back: cubic-bezier(.34,1.56,.64,1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: var(--sans); background: var(--cream); color: var(--ink); overflow: hidden; letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; }
+
+.player { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 18px 44px; }
+.brand { display: flex; align-items: center; gap: 12px; font: 500 11px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+.brand-monogram { width: 24px; height: 24px; border-radius: 50%; background: var(--coral); color: var(--paper); display: grid; place-items: center; font: 500 10px var(--serif); }
+.chapter-label { font: 500 11px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+.chapter-label span { color: var(--ink); font-weight: 500; }
+
+.stage-wrap { display: grid; place-items: center; padding: 4px 24px; min-height: 0; }
+.stage { width: min(1320px, 96vw); height: min(82vh, 780px); position: relative; }
+
+.beat { position: absolute; inset: 0; opacity: 0; pointer-events: none; display: grid; place-items: center; padding: 26px 48px; }
+.beat.active { pointer-events: auto; }
+.beat-inner { width: 100%; max-width: 1180px; display: grid; gap: 18px; }
+
+.eyebrow { font: 500 12px var(--mono); letter-spacing: 0.32em; text-transform: uppercase; color: var(--coral); text-align: center; }
+
+/* ============ BEAT 1 · COLD OPEN ============ */
+.cold-grid { display: grid; gap: 22px; place-items: center; }
+.chat-thread {
+  width: min(640px, 92%); background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
+  padding: 16px 18px; display: grid; gap: 10px; box-shadow: 0 6px 20px rgba(30,27,20,0.06);
+}
+.ct-header { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  font: 500 10px var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
+.ct-header::before { content: '#'; color: var(--coral); font-weight: 700; }
+.chat-msg { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: flex-start; }
+.chat-avatar { width: 28px; height: 28px; border-radius: 7px; background: var(--ink); color: var(--paper);
+  display: grid; place-items: center; font: 500 11px var(--mono); }
+.chat-avatar.you { background: var(--coral); }
+.chat-avatar.mgr { background: var(--ink); }
+.chat-bubble { display: grid; gap: 2px; }
+.chat-meta { font: 500 10px var(--mono); letter-spacing: 0.04em; color: var(--ink-soft); }
+.chat-meta strong { color: var(--ink); font-weight: 600; }
+.chat-text { font: 500 14px/1.45 var(--sans); color: var(--ink); }
+.chat-text em { font-style: normal; color: var(--coral); font-weight: 600; }
+.cold-quote { font: 400 clamp(40px,5vw,68px)/1.1 var(--serif); letter-spacing: -0.03em; color: var(--ink); text-align: center; max-width: 920px; }
+.cold-quote em { font-style: normal; color: var(--coral); }
+.cold-pill {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 10px 18px; background: var(--paper); border: 1.5px solid var(--red); border-radius: 999px;
+  font: 500 14px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--red);
+}
+.cold-pill .cp-neq { font: 500 18px var(--serif); }
+
+/* ============ BEAT 2 · TRAP ============ */
+.trap-grid { display: grid; gap: 26px; place-items: center; text-align: center; }
+.trap-big { font: 400 clamp(64px,8.4vw,118px)/1 var(--serif); letter-spacing: -0.045em; color: var(--ink); }
+.trap-big em { font-style: normal; color: var(--coral); }
+.trap-eqn { display: flex; align-items: center; justify-content: center; gap: 16px;
+  font: 500 clamp(18px,2vw,24px) var(--mono); letter-spacing: 0.04em; flex-wrap: wrap; }
+.trap-eqn .pill { padding: 9px 20px; border-radius: 999px; opacity: 0; }
+.trap-eqn .pill.surface { border: 1.5px solid var(--red); color: var(--red); background: var(--red-tint); }
+.trap-eqn .pill.root { border: 1.5px solid var(--olive); color: var(--olive-2); background: var(--coral-bg); }
+.trap-eqn .neq { color: var(--red); font: 500 26px var(--serif); opacity: 0; }
+.trap-tag { font: 400 clamp(18px,2.2vw,26px)/1.45 var(--serif); color: var(--ink-2); }
+.trap-tag em { font-style: normal; color: var(--coral); font-weight: 500; }
+
+/* ============ BEAT 3 · NAME ============ */
+.name-grid { display: grid; gap: 18px; place-items: center; text-align: center; }
+.name-leads { display: grid; gap: 10px; place-items: center; }
+.name-lead { font: 400 clamp(22px,2.8vw,34px)/1.25 var(--serif); color: var(--ink); letter-spacing: -0.02em; opacity: 0; }
+.name-lead em { font-style: normal; color: var(--coral); font-weight: 500; }
+.name-eye2 { font: 500 12px var(--mono); letter-spacing: 0.32em; text-transform: uppercase; color: var(--coral); opacity: 0; }
+.name-big { font: 400 clamp(64px,9.2vw,140px)/1 var(--serif); letter-spacing: -0.045em; color: var(--ink); }
+.name-big em { font-style: normal; color: var(--coral); }
+.name-underline { height: 4px; width: 0%; background: var(--coral); border-radius: 2px; margin-top: 2px; }
+.name-def { font: 400 clamp(18px,2.2vw,24px)/1.4 var(--serif); color: var(--ink-2); max-width: 880px; opacity: 0; }
+.name-def em { font-style: normal; color: var(--coral); font-weight: 500; }
+
+/* ============ BEAT 4 / 5 · DRILLING-CARDS visual (NEW — different from Block 2 ladder) ============ */
+.drill-grid { display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center; width: 100%; max-width: 1080px; }
+.drill-anchor { display: grid; gap: 14px; place-items: center; }
+
+.symptom-card {
+  background: var(--ink); color: var(--paper);
+  border-radius: 16px; padding: 16px 22px;
+  display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: center;
+  width: 100%; box-shadow: 0 10px 28px rgba(30,27,20,0.16);
+  opacity: 0;
+}
+.sym-icon-box {
+  width: 48px; height: 48px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); display: grid; place-items: center;
+}
+.sym-icon-box svg { width: 30px; height: 30px; color: var(--mint-200); }
+.sym-eye { font: 500 9px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--mint-200); margin-bottom: 2px; }
+.sym-text { font: 500 17px/1.25 var(--serif); letter-spacing: -0.005em; }
+.drill-anchor-cap {
+  font: 500 11px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); text-align: center;
+  opacity: 0;
+}
+
+.why-stack { display: grid; gap: 4px; width: 100%; }
+.why-card {
+  background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px;
+  padding: 12px 18px;
+  display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center;
+  opacity: 0;
+}
+.why-card .wc-eye { font: 500 10px var(--mono); letter-spacing: 0.22em; color: var(--coral); }
+.why-card .wc-q { font: 500 16px/1.25 var(--serif); color: var(--ink); letter-spacing: -0.005em; }
+.why-card .wc-q em { font-style: normal; color: var(--coral); font-weight: 600; }
+.why-card .wc-a { font: 600 13px var(--mono); letter-spacing: 0.04em; color: var(--olive-2); margin-top: 4px; opacity: 0; }
+.why-card.root { background: var(--coral-bg); border-color: var(--olive); }
+.why-card.root .wc-eye { color: var(--olive-2); font-weight: 600; }
+.why-arrow { text-align: center; font: 500 14px var(--mono); color: var(--coral-2); opacity: 0; padding: 1px 0; }
+
+.fix-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--coral); color: var(--paper);
+  padding: 12px 22px; border-radius: 999px;
+  font: 500 13px var(--mono); letter-spacing: 0.22em; text-transform: uppercase;
+  box-shadow: 0 8px 20px rgba(24,67,47,0.22);
+  margin-top: 10px;
+  opacity: 0;
+  align-self: start;
+  width: fit-content;
+}
+.fix-pill::before { content: '★'; color: var(--mint-200); }
+
+/* ============ BEAT 6 · REVEAL ============ */
+.reveal-grid { display: grid; gap: 22px; place-items: center; text-align: center; }
+.reveal-headline { font: 400 clamp(54px,7.2vw,108px)/1 var(--serif); letter-spacing: -0.04em; color: var(--ink); }
+.reveal-headline em { font-style: normal; color: var(--coral); }
+.reveal-pill {
+  background: var(--coral); color: var(--paper);
+  padding: 16px 40px; border-radius: 999px;
+  font: 600 clamp(28px,4vw,46px) var(--mono); letter-spacing: 0.18em;
+  box-shadow: 0 12px 32px rgba(24,67,47,0.22);
+}
+.reveal-bridge { font: 400 clamp(20px,2.4vw,28px)/1.4 var(--serif); color: var(--ink-2); max-width: 860px; }
+.reveal-bridge em { font-style: normal; color: var(--coral); font-weight: 500; }
+.reveal-pill-row {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 10px 22px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 999px;
+  font: 500 13px var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+}
+.reveal-pill-row strong { color: var(--coral); font-weight: 600; }
+.reveal-sub { font: 400 clamp(18px,2.2vw,24px)/1.4 var(--sans); color: var(--ink-soft); max-width: 840px; }
+.reveal-sub em { font-style: normal; color: var(--coral); font-weight: 500; }
+
+/* ============ BEAT 7 · ENG PROMPT ============ */
+.eprompt-grid { display: grid; gap: 24px; place-items: center; text-align: center; }
+.eprompt-headline { font: 400 clamp(36px,4.8vw,64px)/1.1 var(--serif); letter-spacing: -0.03em; color: var(--ink); max-width: 920px; }
+.eprompt-headline em { font-style: normal; color: var(--coral); }
+.eprompt-question { font: 400 clamp(20px,2.4vw,28px)/1.4 var(--serif); color: var(--ink-2); max-width: 720px; }
+.eprompt-question em { font-style: normal; color: var(--coral); font-weight: 500; }
+.eprompt-hint { font: 500 11px var(--mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* ============ BEAT 8 · LOCK ============ */
+.lock-grid { display: grid; gap: 22px; place-items: center; text-align: center; }
+.lock-mini-svg { width: 84px; height: 84px; opacity: 0.7; }
+.lock-headline { font: 400 clamp(56px,7.6vw,116px)/1 var(--serif); letter-spacing: -0.04em; color: var(--ink); }
+.lock-headline em { font-style: normal; color: var(--coral); }
+.lock-sub { font: 400 clamp(40px,5vw,72px)/1 var(--serif); letter-spacing: -0.03em; color: var(--coral); }
+.lock-rule {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 22px;
+  font: 500 14px var(--mono); letter-spacing: 0.04em; color: var(--ink);
+  display: inline-flex; gap: 14px; align-items: center; max-width: 760px; text-align: left;
+}
+.lock-rule .lr-tag { font: 500 10px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--coral); padding: 4px 10px; background: var(--coral-bg); border-radius: 999px; flex-shrink: 0; }
+
+/* ============ BEAT 9 · CLOSE ============ */
+.close-grid { display: grid; gap: 22px; place-items: center; text-align: center; }
+.close-eye { font: 500 11px var(--mono); letter-spacing: 0.28em; text-transform: uppercase; color: var(--coral); }
+.close-headline { font: 400 clamp(40px,5.4vw,76px)/1.05 var(--serif); letter-spacing: -0.03em; color: var(--ink); max-width: 880px; }
+.close-headline em { font-style: normal; color: var(--coral); }
+.close-next {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--coral); color: var(--paper);
+  padding: 14px 24px; border-radius: 999px;
+  font: 500 12px var(--mono); letter-spacing: 0.22em; text-transform: uppercase;
+  box-shadow: 0 8px 22px rgba(24,67,47,0.22);
+}
+.close-next .arr { color: var(--mint-200); }
+
+/* ============ ENGAGEMENT OVERLAY ============ */
+.engage-overlay {
+  position: fixed; inset: 0; background: rgba(246,245,243,0.96);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: grid; place-items: center; z-index: 100; opacity: 0; pointer-events: none;
+  transition: opacity 350ms var(--ease); padding: 24px;
+}
+.engage-overlay.active { opacity: 1; pointer-events: auto; }
+.engage-card { width: min(960px, 96vw); display: grid; gap: 18px; text-align: center; }
+.engage-eye { font: 500 12px var(--mono); letter-spacing: 0.32em; text-transform: uppercase; color: var(--coral); }
+.engage-prompt { font: 400 clamp(28px,3.6vw,42px)/1.15 var(--serif); color: var(--ink); letter-spacing: -0.03em; }
+.engage-prompt em { font-style: normal; color: var(--coral); }
+.engage-sub { font: 400 17px/1.45 var(--sans); color: var(--ink-soft); }
+.engage-sub em { font-style: normal; color: var(--coral); font-weight: 500; }
+
+.e-rungs { display: grid; gap: 8px; }
+.e-slot {
+  background: var(--paper); border: 1.5px dashed var(--line); border-radius: 12px;
+  padding: 12px 16px; min-height: 56px;
+  display: grid; grid-template-columns: 84px 1fr; gap: 14px; align-items: center;
+  transition: border-color 200ms var(--ease), background 200ms var(--ease);
+  text-align: left;
+}
+.e-slot.filled { border-style: solid; border-color: var(--olive); background: var(--coral-bg); }
+.e-slot.filled-wrong { border-style: solid; border-color: var(--red); background: var(--red-tint); animation: shakeNo 0.4s var(--ease); }
+@keyframes shakeNo { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.e-slot-no { font: 500 11px var(--mono); letter-spacing: 0.2em; color: var(--coral); }
+.e-slot-q { font: 500 15px/1.3 var(--serif); color: var(--ink); }
+
+.e-cards { display: grid; gap: 8px; }
+.e-card {
+  background: var(--paper); border: 1.5px solid var(--coral); border-radius: 10px;
+  padding: 12px 16px; cursor: pointer; user-select: none;
+  font: 500 15px/1.3 var(--serif); color: var(--ink); text-align: left;
+  transition: transform 200ms var(--ease), opacity 200ms var(--ease), background 200ms var(--ease);
+}
+.e-card:hover:not(.placed) { background: var(--coral-bg); transform: translateY(-2px); }
+.e-card.placed { opacity: 0.3; pointer-events: none; }
+.e-cards-label { font: 500 11px var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; text-align: left; }
+
+.engage-feedback {
+  min-height: 50px; padding: 12px 20px;
+  background: var(--bone); border: 1px solid var(--line); border-radius: 12px;
+  font: 400 15px/1.5 var(--sans); color: var(--ink-2);
+  opacity: 0; transition: opacity 300ms var(--ease); text-align: left;
+}
+.engage-feedback.shown { opacity: 1; }
+.engage-feedback.correct { background: var(--olive-tint); border-color: var(--olive); color: var(--olive-2); }
+.engage-feedback.wrong { background: var(--red-tint); border-color: var(--red); color: var(--red); }
+.engage-resume { font: 500 10px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); opacity: 0; transition: opacity 300ms var(--ease); }
+.engage-resume.shown { opacity: 1; }
+
+/* ============ CONTROLS ============ */
+.controls { display: grid; grid-template-columns: auto 1fr auto auto; gap: 16px; align-items: center; padding: 8px 44px 18px; }
+.play-btn { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--ink); color: var(--paper); display: grid; place-items: center; cursor: pointer; transition: background 180ms var(--ease); }
+.play-btn:hover { background: var(--coral); }
+.scrubber { position: relative; height: 24px; display: flex; align-items: center; cursor: pointer; }
+.scrubber-track { position: relative; width: 100%; height: 3px; background: var(--line); border-radius: 2px; }
+.scrubber-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--coral); width: 0%; border-radius: 2px; }
+.scrubber-handle { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; background: var(--coral); border: 2px solid var(--paper); border-radius: 50%; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.18); }
+.scrubber:hover .scrubber-track { height: 5px; }
+.speed-pill { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; font: 500 11px var(--mono); letter-spacing: 0.06em; color: var(--ink); transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease); min-width: 52px; text-align: center; user-select: none; }
+.speed-pill:hover { border-color: var(--coral); color: var(--coral); }
+.speed-pill.fast { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.time-display { font: 500 11px var(--mono); color: var(--ink-soft); font-variant-numeric: tabular-nums; letter-spacing: 0.08em; min-width: 88px; text-align: right; }
+
+@media (max-width: 1000px) { .drill-grid { grid-template-columns: 1fr; gap: 18px; } }
+</style>
+</head>
+<body>
+
+<div class="player">
+  <div class="header">
+    <div class="brand"><span class="brand-monogram">0</span> ZERO · BLOCK 03</div>
+    <div class="chapter-label">THE 5 WHYS · <span>FROM CLUE TO CAUSE</span></div>
+  </div>
+
+  <div class="stage-wrap"><div class="stage" id="stage">
+
+    <!-- BEAT 1 · COLD OPEN -->
+    <div class="beat" data-beat="cold">
+      <div class="beat-inner cold-grid">
+        <div class="chat-thread" id="b1Chat">
+          <div class="ct-header">slack · #cancellations-investigation</div>
+          <div class="chat-msg" id="b1M1"><div class="chat-avatar you">YOU</div><div class="chat-bubble"><div class="chat-meta"><strong>You</strong> · 9:42 AM</div><div class="chat-text">Found the cause — cancel button moved March 3rd, new drivers tap by mistake.</div></div></div>
+          <div class="chat-msg" id="b1M2"><div class="chat-avatar mgr">M</div><div class="chat-bubble"><div class="chat-meta"><strong>Manager</strong> · 9:43 AM</div><div class="chat-text">that's a clue. <em>not the cause.</em></div></div></div>
+        </div>
+        <div class="cold-quote" id="b1Quote">"That's where the <em>trail ends</em>. Not the cause."</div>
+        <div class="cold-pill" id="b1Pill">CLUE <span class="cp-neq">≠</span> CAUSE</div>
+      </div>
+    </div>
+
+    <!-- BEAT 2 · TRAP -->
+    <div class="beat" data-beat="trap">
+      <div class="beat-inner trap-grid">
+        <div class="eyebrow" id="b2Eye">RECOGNIZE THE PATTERN</div>
+        <div class="trap-big" id="b2Big">The <em>surface</em> trap.</div>
+        <div class="trap-eqn" id="b2Eqn">
+          <span class="pill surface" id="b2P1">SURFACE FIX</span>
+          <span class="neq" id="b2Neq">≠</span>
+          <span class="pill root" id="b2P2">ROOT FIX</span>
+        </div>
+        <div class="trap-tag" id="b2Tag">You shipped. The <em>bug came back</em>.</div>
+      </div>
+    </div>
+
+    <!-- BEAT 3 · NAME -->
+    <div class="beat" data-beat="name">
+      <div class="beat-inner name-grid">
+        <div class="eyebrow" id="b3Eye">HOW PEOPLE WHO GET IT RIGHT DO IT</div>
+        <div class="name-leads">
+          <div class="name-lead" id="b3LD1">Don't <em>stop</em> at the first explanation.</div>
+          <div class="name-lead" id="b3LD2">Keep <em>asking why</em>.</div>
+          <div class="name-lead" id="b3LD3">Each why digs <em>one layer deeper</em>.</div>
+        </div>
+        <div class="name-eye2" id="b3Eye2">THE TECHNIQUE</div>
+        <div class="name-big" id="b3Big">The 5 <em>Whys</em></div>
+        <div class="name-underline" id="b3UL"></div>
+        <div class="name-def" id="b3Def">Stop when the answer is something a person can <em>do tomorrow</em>.</div>
+      </div>
+    </div>
+
+    <!-- BEAT 4 · CAR EXAMPLE (the mental model) -->
+    <div class="beat" data-beat="model">
+      <div class="beat-inner drill-grid">
+        <div class="drill-anchor">
+          <div class="drill-anchor-cap" id="b4Cap">SIMPLE EXAMPLE</div>
+          <div class="symptom-card" id="b4Sym">
+            <div class="sym-icon-box">
+              <svg viewBox="0 0 60 36" fill="currentColor"><path d="M 8 26 L 14 16 L 22 14 L 38 14 L 46 22 L 52 22 L 54 26 L 54 30 L 6 30 Z"/><circle cx="18" cy="30" r="4" fill="rgb(31,29,30)" stroke="currentColor" stroke-width="1.5"/><circle cx="44" cy="30" r="4" fill="rgb(31,29,30)" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <div>
+              <div class="sym-eye">SYMPTOM · YOUR CAR</div>
+              <div class="sym-text">"It won't start."</div>
+            </div>
+          </div>
+          <div class="fix-pill" id="b4Fix">FIX THE REMINDER · DONE</div>
+        </div>
+        <div class="why-stack" id="b4Stack">
+          <div class="why-card" id="b4W1">
+            <div class="wc-eye">WHY 1</div>
+            <div>
+              <div class="wc-q">Why won't it start?</div>
+              <div class="wc-a" id="b4W1A">→ THE BATTERY IS DEAD</div>
+            </div>
+          </div>
+          <div class="why-arrow" id="b4Ar1">↓</div>
+          <div class="why-card" id="b4W2">
+            <div class="wc-eye">WHY 2</div>
+            <div>
+              <div class="wc-q">Why is the battery dead?</div>
+              <div class="wc-a" id="b4W2A">→ HEADLIGHTS LEFT ON OVERNIGHT</div>
+            </div>
+          </div>
+          <div class="why-arrow" id="b4Ar2">↓</div>
+          <div class="why-card" id="b4W3">
+            <div class="wc-eye">WHY 3</div>
+            <div>
+              <div class="wc-q">Why did you leave them on?</div>
+              <div class="wc-a" id="b4W3A">→ FORGOT TO TURN THEM OFF</div>
+            </div>
+          </div>
+          <div class="why-arrow" id="b4Ar3">↓</div>
+          <div class="why-card root" id="b4W4">
+            <div class="wc-eye">★ ROOT</div>
+            <div>
+              <div class="wc-q">Why did you forget?</div>
+              <div class="wc-a" id="b4W4A">→ DASHBOARD REMINDER LIGHT WAS BROKEN</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEAT 5 · WALKTHROUGH on Uber (same drill, real data) -->
+    <div class="beat" data-beat="walk">
+      <div class="beat-inner drill-grid">
+        <div class="drill-anchor">
+          <div class="drill-anchor-cap" id="b5Cap">NOW ON REAL DATA</div>
+          <div class="symptom-card" id="b5Sym">
+            <div class="sym-icon-box">
+              <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M 30 12 L 30 36"/><path d="M 18 28 L 30 40 L 42 28"/><circle cx="30" cy="48" r="2.5" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div>
+              <div class="sym-eye">SYMPTOM · UBER DATA</div>
+              <div class="sym-text">"New drivers cancelling more."</div>
+            </div>
+          </div>
+          <div class="fix-pill" id="b5Fix">REVERT THE BUTTON · DONE</div>
+        </div>
+        <div class="why-stack" id="b5Stack">
+          <div class="why-card" id="b5W1">
+            <div class="wc-eye">WHY 1</div>
+            <div>
+              <div class="wc-q">Why are they cancelling more?</div>
+              <div class="wc-a" id="b5W1A">→ TAPPING CANCEL BY MISTAKE</div>
+            </div>
+          </div>
+          <div class="why-arrow" id="b5Ar1">↓</div>
+          <div class="why-card" id="b5W2">
+            <div class="wc-eye">WHY 2</div>
+            <div>
+              <div class="wc-q">Why are they tapping by mistake?</div>
+              <div class="wc-a" id="b5W2A">→ CANCEL BUTTON NEXT TO ACCEPT</div>
+            </div>
+          </div>
+          <div class="why-arrow" id="b5Ar2">↓</div>
+          <div class="why-card root" id="b5W3">
+            <div class="wc-eye">★ ROOT</div>
+            <div>
+              <div class="wc-q">Why did the button move?</div>
+              <div class="wc-a" id="b5W3A">→ MARCH 3RD UI REDESIGN</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEAT 6 · REVEAL · RCA + 5 Whys + Toyota -->
+    <div class="beat" data-beat="reveal">
+      <div class="beat-inner reveal-grid">
+        <div class="eyebrow" id="b6Eye">WHAT YOU JUST LEARNED</div>
+        <div class="reveal-headline" id="b6HL">Root <em>Cause Analysis</em>.</div>
+        <div class="reveal-pill" id="b6Pill">RCA</div>
+        <div class="reveal-bridge" id="b6Bridge">The <em>5 Whys</em> is the most common method for doing it.</div>
+        <div class="reveal-pill-row" id="b6Toyota"><strong>EST. TOYOTA</strong> · <span>1950s</span></div>
+        <div class="reveal-sub" id="b6Sub">Postmortems. Product reviews. Anywhere people debug. <em>You already know how to do it.</em></div>
+      </div>
+    </div>
+
+    <!-- BEAT 7 · ENG PROMPT -->
+    <div class="beat" data-beat="eprompt">
+      <div class="beat-inner eprompt-grid">
+        <div class="eyebrow" id="b7Eye">YOUR TURN · BUILD THE CHAIN</div>
+        <div class="eprompt-headline" id="b7HL">Customer onboarding completion dropped from <em>80% to 60%</em>.</div>
+        <div class="eprompt-question" id="b7Q">Drag the answers into <em>drilling order</em>. Symptom at the top, root at the bottom.</div>
+        <div class="eprompt-hint" id="b7Hint">↓ TAP TO PLACE</div>
+      </div>
+    </div>
+
+    <!-- BEAT 8 · LOCK -->
+    <div class="beat" data-beat="lock">
+      <div class="beat-inner lock-grid">
+        <svg class="lock-mini-svg" viewBox="0 0 84 84" id="b8Mini" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3" style="color: rgb(24,67,47);">
+          <rect x="14" y="10" width="56" height="14" rx="3" fill="rgba(24,67,47,0.10)" stroke="currentColor"/>
+          <path d="M 42 24 L 42 32"/>
+          <rect x="14" y="32" width="56" height="14" rx="3" fill="rgba(24,67,47,0.10)" stroke="currentColor"/>
+          <path d="M 42 46 L 42 54"/>
+          <rect x="14" y="54" width="56" height="16" rx="3" fill="rgb(232,249,237)" stroke="rgb(73,186,97)"/>
+          <circle cx="42" cy="62" r="3" fill="rgb(73,186,97)" stroke="none"/>
+        </svg>
+        <div class="eyebrow" id="b8Eye">LOCK THIS IN</div>
+        <div class="lock-headline" id="b8HL">Don't fix the <em>surface</em>.</div>
+        <div class="lock-sub" id="b8Sub">Fix the root.</div>
+        <div class="lock-rule" id="b8Rule">
+          <span class="lr-tag">THE RULE</span>
+          <span>Keep asking why until the answer is something a person can do tomorrow.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEAT 9 · CLOSE -->
+    <div class="beat" data-beat="close">
+      <div class="beat-inner close-grid">
+        <div class="close-eye" id="b9Eye">NICE WORK</div>
+        <div class="close-headline" id="b9HL">Now let's <em>put it into practice</em>.</div>
+        <div class="close-next" id="b9Next">YOUR TURN <span class="arr">→</span></div>
+      </div>
+    </div>
+
+  </div></div>
+
+  <div class="controls">
+    <button class="play-btn" id="playBtn" aria-label="Play">
+      <svg id="playIcon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2v12l11-6-11-6z"/></svg>
+    </button>
+    <div class="scrubber" id="scrubber">
+      <div class="scrubber-track"><div class="scrubber-fill" id="scrubFill"></div><div class="scrubber-handle" id="scrubHandle"></div></div>
+    </div>
+    <button class="speed-pill" id="speedPill" aria-label="Playback speed">1×</button>
+    <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+  </div>
+
+  <!-- ENGAGEMENT OVERLAY (drag-sequence) -->
+  <div class="engage-overlay" id="engageOverlay">
+    <div class="engage-card">
+      <div class="engage-eye">YOUR TURN · BUILD THE CHAIN</div>
+      <div class="engage-prompt">Customer onboarding dropped from <em>80% to 60%</em>.</div>
+      <div class="engage-sub">Tap each answer in <em>drilling order</em>. Symptom at the top, root at the bottom.</div>
+      <div>
+        <div class="e-rungs" id="eRungs">
+          <div class="e-slot" data-pos="1"><span class="e-slot-no">SYMPTOM</span><span class="e-slot-q">⋯</span></div>
+          <div class="e-slot" data-pos="2"><span class="e-slot-no">WHY 1</span><span class="e-slot-q">⋯</span></div>
+          <div class="e-slot" data-pos="3"><span class="e-slot-no">WHY 2</span><span class="e-slot-q">⋯</span></div>
+          <div class="e-slot" data-pos="4"><span class="e-slot-no">★ ROOT</span><span class="e-slot-q">⋯</span></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <div class="e-cards-label">TAP A CARD TO PLACE IT</div>
+          <div class="e-cards" id="eCards">
+            <button class="e-card" data-rank="3">"Step 3 now requires SMS verification."</button>
+            <button class="e-card" data-rank="1">"Users don't complete onboarding."</button>
+            <button class="e-card" data-rank="4">"We added mandatory phone-verification on March 1st."</button>
+            <button class="e-card" data-rank="2">"Step 3 has more drop-off than before."</button>
+          </div>
+        </div>
+      </div>
+      <div class="engage-feedback" id="engageFB"></div>
+      <div class="engage-resume" id="engageResume">RESUMING IN A MOMENT…</div>
+    </div>
+  </div>
+
+  <audio id="averyAudio" src="avery-block3-v5-leadin.mp3" preload="auto"></audio>
+  <audio id="rxC" src="b3-react-correct.mp3" preload="auto"></audio>
+  <audio id="rxW" src="b3-react-wrong.mp3" preload="auto"></audio>
+</div>
+
+<script>
+const A = {
+  cold: 0.60, cold_clue: 1.51, cold_mgr: 7.18, cold_not: 8.71, cold_trail: 9.89,
+  trap: 11.41, trap_button: 13.46, trap_finding: 16.46, trap_back: 18.48,
+  trap_surface: 21.07, trap_deeper: 23.03,
+  name: 24.52, name_dont: 25.60, name_keep: 27.19, name_label: 29.53, name_each: 30.62,
+  model: 33.47, model_car: 34.49,
+  model_w1q: 35.36, model_w1a: 35.65,
+  model_w2q: 36.79, model_w2a: 37.82,
+  model_w3q: 38.99, model_w3a: 40.34,
+  model_w4q: 41.35, model_w4a: 42.98,
+  model_fix: 45.43, model_drill: 49.30, model_tomorrow: 51.94,
+  walk: 53.46,
+  walk_w1q: 54.46, walk_w1a: 56.27,
+  walk_w2q: 57.56, walk_w2a: 60.57,
+  walk_w3q: 63.05, walk_w3a: 64.76,
+  walk_revert: 67.12, walk_root: 68.15,
+  rev: 70.11, rev_rca_label: 72.14, rev_acro: 73.28, rev_5label: 75.33,
+  rev_method: 76.85, rev_toyota: 78.86, rev_50s: 79.94,
+  rev_post: 81.24, rev_already: 82.79,
+  eng: 84.28, eng_60: 87.12, eng_drag: 88.98, eng_top: 90.60,
+  lock: 92.88, lock_dont: 94.07, lock_root: 95.79, lock_rule: 96.97, lock_until: 100.67,
+  close: 102.12, close_yourturn: 103.87,
+};
+
+const BEATS = [
+  { id: 'cold',     start: A.cold,    end: A.trap   },
+  { id: 'trap',     start: A.trap,    end: A.name   },
+  { id: 'name',     start: A.name,    end: A.model  },
+  { id: 'model',    start: A.model,   end: A.walk   },
+  { id: 'walk',     start: A.walk,    end: A.rev    },
+  { id: 'reveal',   start: A.rev,     end: A.eng    },
+  { id: 'eprompt',  start: A.eng,     end: A.lock   },
+  { id: 'lock',     start: A.lock,    end: A.close  },
+  { id: 'close',    start: A.close,   end: 105.80   },
+];
+BEATS.forEach(b => { b.dur = b.end - b.start; });
+const TOTAL = BEATS[BEATS.length - 1].end;
+const ENG_PAUSE_AT = A.lock - 0.4;
+
+const beatEl = id => document.querySelector(`.beat[data-beat="${id}"]`);
+const master = gsap.timeline({ paused: true });
+gsap.set('.beat', { opacity: 0 });
+
+function at(t, beat) { return Math.max(0, t - beat.start); }
+
+/* ===== BEAT 1 · COLD OPEN ===== */
+{
+  const b = BEATS[0];
+  master.add(gsap.timeline()
+    .to(beatEl('cold'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b1Chat', { opacity: 0, y: 16, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5 }, at(A.cold, b))
+    .fromTo('#b1M1', { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4 }, at(A.cold_clue, b))
+    .fromTo('#b1M2', { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45 }, at(A.cold_mgr, b))
+    .fromTo('#b1Quote', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55 }, at(A.cold_not, b))
+    .fromTo('#b1Pill', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, at(A.cold_trail, b))
+    .to(beatEl('cold'), { opacity: 0, duration: 0.35 }, b.dur - 0.35),
+  b.start);
+}
+
+/* ===== BEAT 2 · TRAP ===== */
+{
+  const b = BEATS[1];
+  master.add(gsap.timeline()
+    .to(beatEl('trap'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b2Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35 }, 0)
+    .fromTo('#b2Big', { opacity: 0, y: 22, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.3)' }, at(A.trap, b))
+    .fromTo('#b2P1', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }, at(A.trap_finding, b))
+    .fromTo('#b2Neq', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(2)' }, at(A.trap_back, b))
+    .fromTo('#b2P2', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.5)' }, at(A.trap_surface, b))
+    .fromTo('#b2Tag', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.trap_deeper, b))
+    .to(beatEl('trap'), { opacity: 0, duration: 0.35 }, b.dur - 0.35),
+  b.start);
+}
+
+/* ===== BEAT 3 · NAME ===== */
+{
+  const b = BEATS[2];
+  master.add(gsap.timeline()
+    .to(beatEl('name'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b3Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.name, b))
+    .fromTo('#b3LD1', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.name_dont, b))
+    .fromTo('#b3LD2', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.name_keep, b))
+    .fromTo('#b3LD3', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.name_each, b))
+    .to(['#b3LD1','#b3LD2','#b3LD3','#b3Eye'], { opacity: 0, duration: 0.35 }, at(A.name_label, b) - 0.4)
+    .fromTo('#b3Eye2', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35 }, at(A.name_label, b) - 0.2)
+    .fromTo('#b3Big', { opacity: 0, y: 24, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.3)' }, at(A.name_label, b))
+    .fromTo('#b3UL', { width: '0%' }, { width: '80%', duration: 0.55, ease: 'power2.out' }, at(A.name_label, b) + 0.5)
+    .fromTo('#b3Def', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.name_each, b) + 0.5)
+    .to(beatEl('name'), { opacity: 0, duration: 0.35 }, b.dur - 0.35),
+  b.start);
+}
+
+/* ===== BEAT 4 · CAR EXAMPLE — drilling cards ===== */
+{
+  const b = BEATS[3];
+  master.add(gsap.timeline()
+    .to(beatEl('model'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b4Cap', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.model, b))
+    .fromTo('#b4Sym', { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.3)' }, at(A.model_car, b))
+    // WHY 1
+    .fromTo('#b4W1', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.model_w1q, b))
+    .fromTo('#b4W1A', { opacity: 0 }, { opacity: 1, duration: 0.35 }, at(A.model_w1a, b))
+    .fromTo('#b4Ar1', { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(A.model_w2q, b) - 0.2)
+    // WHY 2
+    .fromTo('#b4W2', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.model_w2q, b))
+    .fromTo('#b4W2A', { opacity: 0 }, { opacity: 1, duration: 0.35 }, at(A.model_w2a, b))
+    .fromTo('#b4Ar2', { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(A.model_w3q, b) - 0.2)
+    // WHY 3
+    .fromTo('#b4W3', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.model_w3q, b))
+    .fromTo('#b4W3A', { opacity: 0 }, { opacity: 1, duration: 0.35 }, at(A.model_w3a, b))
+    .fromTo('#b4Ar3', { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(A.model_w4q, b) - 0.2)
+    // ROOT
+    .fromTo('#b4W4', { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, at(A.model_w4q, b))
+    .fromTo('#b4W4A', { opacity: 0 }, { opacity: 1, duration: 0.4 }, at(A.model_w4a, b))
+    .fromTo('#b4Fix', { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.5)' }, at(A.model_fix, b))
+    .to(beatEl('model'), { opacity: 0, duration: 0.4 }, b.dur - 0.4),
+  b.start);
+}
+
+/* ===== BEAT 5 · WALKTHROUGH on Uber ===== */
+{
+  const b = BEATS[4];
+  master.add(gsap.timeline()
+    .to(beatEl('walk'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b5Cap', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.walk, b))
+    .fromTo('#b5Sym', { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.3)' }, at(A.walk, b) + 0.2)
+    .fromTo('#b5W1', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.walk_w1q, b))
+    .fromTo('#b5W1A', { opacity: 0 }, { opacity: 1, duration: 0.35 }, at(A.walk_w1a, b))
+    .fromTo('#b5Ar1', { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(A.walk_w2q, b) - 0.2)
+    .fromTo('#b5W2', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.walk_w2q, b))
+    .fromTo('#b5W2A', { opacity: 0 }, { opacity: 1, duration: 0.35 }, at(A.walk_w2a, b))
+    .fromTo('#b5Ar2', { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(A.walk_w3q, b) - 0.2)
+    .fromTo('#b5W3', { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, at(A.walk_w3q, b))
+    .fromTo('#b5W3A', { opacity: 0 }, { opacity: 1, duration: 0.4 }, at(A.walk_w3a, b))
+    .fromTo('#b5Fix', { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.5)' }, at(A.walk_revert, b))
+    .to(beatEl('walk'), { opacity: 0, duration: 0.4 }, b.dur - 0.4),
+  b.start);
+}
+
+/* ===== BEAT 6 · REVEAL ===== */
+{
+  const b = BEATS[5];
+  master.add(gsap.timeline()
+    .to(beatEl('reveal'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b6Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.rev, b))
+    .fromTo('#b6HL', { opacity: 0, y: 18, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.3)' }, at(A.rev_rca_label, b))
+    .fromTo('#b6Pill', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.6)' }, at(A.rev_acro, b))
+    .fromTo('#b6Bridge', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.rev_5label, b) - 0.3)
+    .fromTo('#b6Toyota', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, at(A.rev_toyota, b))
+    .fromTo('#b6Sub', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.rev_post, b))
+    .to(beatEl('reveal'), { opacity: 0, duration: 0.4 }, b.dur - 0.4),
+  b.start);
+}
+
+/* ===== BEAT 7 · ENG PROMPT ===== */
+{
+  const b = BEATS[6];
+  master.add(gsap.timeline()
+    .to(beatEl('eprompt'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b7Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.eng, b))
+    .fromTo('#b7HL', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55 }, at(A.eng_60, b) - 0.3)
+    .fromTo('#b7Q', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, at(A.eng_drag, b))
+    .fromTo('#b7Hint', { opacity: 0 }, { opacity: 1, duration: 0.4 }, at(A.eng_top, b))
+    .to(beatEl('eprompt'), { opacity: 0, duration: 0.35 }, b.dur - 0.35),
+  b.start);
+}
+
+/* ===== BEAT 8 · LOCK ===== */
+{
+  const b = BEATS[7];
+  master.add(gsap.timeline()
+    .to(beatEl('lock'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b8Mini', { opacity: 0, scale: 0.6 }, { opacity: 0.7, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, at(A.lock, b))
+    .fromTo('#b8Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.lock, b) + 0.2)
+    .fromTo('#b8HL', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, at(A.lock_dont, b))
+    .fromTo('#b8Sub', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55 }, at(A.lock_root, b))
+    .fromTo('#b8Rule', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55 }, at(A.lock_rule, b))
+    .to(beatEl('lock'), { opacity: 0, duration: 0.35 }, b.dur - 0.35),
+  b.start);
+}
+
+/* ===== BEAT 9 · CLOSE ===== */
+{
+  const b = BEATS[8];
+  master.add(gsap.timeline()
+    .to(beatEl('close'), { opacity: 1, duration: 0.4 }, 0)
+    .fromTo('#b9Eye', { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4 }, at(A.close, b))
+    .fromTo('#b9HL', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }, at(A.close, b) + 0.3)
+    .fromTo('#b9Next', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, at(A.close_yourturn, b)),
+  b.start);
+}
+
+master.duration(TOTAL);
+
+/* ---------- AUDIO ---------- */
+const averyAudio = document.getElementById('averyAudio');
+const rxC = document.getElementById('rxC'), rxW = document.getElementById('rxW');
+function audioAvailable() { return averyAudio && !isNaN(averyAudio.duration) && averyAudio.duration > 0; }
+function getTime() { return audioAvailable() ? averyAudio.currentTime : 0; }
+function setTime(t) { if (audioAvailable()) averyAudio.currentTime = Math.min(Math.max(0, t), averyAudio.duration); }
+function isPlaying() { return audioAvailable() && !averyAudio.paused; }
+function play() { if (getTime() >= TOTAL - 0.05) setTime(0); if (audioAvailable()) averyAudio.play().catch(()=>{}); updatePlayIcon(); }
+function pause() { if (audioAvailable()) averyAudio.pause(); updatePlayIcon(); }
+
+let pausedFor = null; let engDone = false;
+let justScrubbed = false, scrubResetTimer = null, resumeTimer = null;
+
+function checkAutoPauses(t) {
+  if (justScrubbed || !isPlaying()) return;
+  if (!engDone && pausedFor !== 'eng' && t >= ENG_PAUSE_AT && t < BEATS[6].end + 0.5) {
+    pausedFor = 'eng'; pause(); document.getElementById('engageOverlay').classList.add('active');
+  }
+}
+
+gsap.ticker.add(() => {
+  const t = getTime();
+  master.seek(t);
+  updateActiveBeat(t);
+  updateScrubber(t);
+  updateTimeDisplay(t);
+  checkAutoPauses(t);
+});
+
+function updateActiveBeat(t) {
+  document.querySelectorAll('.beat').forEach(b => b.classList.remove('active'));
+  const cur = BEATS.find(b => t >= b.start && t < b.end);
+  if (cur) { const el = beatEl(cur.id); if (el) el.classList.add('active'); }
+}
+
+/* ---------- ENGAGEMENT (drag-sequence) ---------- */
+const engageOverlay = document.getElementById('engageOverlay');
+const engResume = document.getElementById('engageResume');
+const engFB = document.getElementById('engageFB');
+const eSlots = document.querySelectorAll('#eRungs .e-slot');
+const eCards = document.querySelectorAll('#eCards .e-card');
+let eNextRank = 1; let eLocked = false;
+
+function autoResume(clip, isCorrect) {
+  const buf = isCorrect ? 600 : 900;
+  const waitMs = (clip && !isNaN(clip.duration) && clip.duration > 0) ? clip.duration * 1000 + buf : (isCorrect ? 5000 : 8000);
+  setTimeout(() => engResume.classList.add('shown'), Math.max(800, waitMs - 1500));
+  clearTimeout(resumeTimer);
+  resumeTimer = setTimeout(() => {
+    engDone = true;
+    engageOverlay.classList.remove('active');
+    pausedFor = null;
+    play();
+  }, waitMs);
+}
+
+eCards.forEach(card => {
+  card.addEventListener('click', () => {
+    if (eLocked || card.classList.contains('placed')) return;
+    const rank = parseInt(card.dataset.rank, 10);
+    const slot = document.querySelector(`#eRungs .e-slot[data-pos="${rank}"]`);
+    if (rank === eNextRank && slot) {
+      slot.classList.add('filled');
+      slot.querySelector('.e-slot-q').textContent = card.textContent;
+      card.classList.add('placed');
+      eNextRank++;
+      if (eNextRank > 4) {
+        eLocked = true;
+        engFB.textContent = "That's the chain. Each link more specific. The bottom one is something a person can actually do.";
+        engFB.className = 'engage-feedback shown correct';
+        try { rxC.currentTime = 0; rxC.play().catch(()=>{}); } catch(_) {}
+        autoResume(rxC, true);
+      }
+    } else if (slot) {
+      slot.classList.add('filled-wrong');
+      setTimeout(() => slot.classList.remove('filled-wrong'), 600);
+      if (!card._warned) {
+        card._warned = true;
+        try { rxW.currentTime = 0; rxW.play().catch(()=>{}); } catch(_) {}
+        engFB.textContent = "Drill from symptom down. Find the broadest answer first, then narrow toward the fixable root.";
+        engFB.className = 'engage-feedback shown wrong';
+      }
+    }
+  });
+});
+
+/* ---------- SCRUBBER ---------- */
+const scrubber = document.getElementById('scrubber');
+const scrubFill = document.getElementById('scrubFill');
+const scrubHandle = document.getElementById('scrubHandle');
+const timeDisplay = document.getElementById('timeDisplay');
+function updateScrubber(t) { const pct = Math.max(0, Math.min((t/TOTAL)*100, 100)); scrubFill.style.width = pct+'%'; scrubHandle.style.left = pct+'%'; }
+function fmt(t) { const m = Math.floor(t/60); const s = Math.floor(t%60).toString().padStart(2,'0'); return `${m}:${s}`; }
+function updateTimeDisplay(t) { timeDisplay.textContent = `${fmt(t)} / ${fmt(TOTAL)}`; }
+
+let dragging = false;
+function scrubFromEvent(e) {
+  const rect = scrubber.getBoundingClientRect();
+  const x = (e.clientX ?? e.touches?.[0]?.clientX) - rect.left;
+  const pct = Math.max(0, Math.min(x/rect.width, 1));
+  const t = pct * TOTAL;
+  setTime(t);
+  justScrubbed = true; clearTimeout(scrubResetTimer);
+  scrubResetTimer = setTimeout(() => { justScrubbed = false; }, 1000);
+  if (t > ENG_PAUSE_AT) { engDone = true; if (pausedFor === 'eng') { pausedFor = null; engageOverlay.classList.remove('active'); clearTimeout(resumeTimer); } }
+  else if (t < ENG_PAUSE_AT - 1) { engDone = false; if (pausedFor === 'eng') { pausedFor = null; engageOverlay.classList.remove('active'); clearTimeout(resumeTimer); } }
+}
+scrubber.addEventListener('mousedown', e => { dragging = true; scrubFromEvent(e); });
+document.addEventListener('mousemove', e => { if (dragging) scrubFromEvent(e); });
+document.addEventListener('mouseup', () => { dragging = false; });
+scrubber.addEventListener('touchstart', e => { dragging = true; scrubFromEvent(e.touches[0]); }, { passive: true });
+document.addEventListener('touchmove', e => { if (dragging) scrubFromEvent(e.touches[0]); }, { passive: true });
+document.addEventListener('touchend', () => { dragging = false; });
+
+/* ---------- PLAY + KEYS ---------- */
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+function updatePlayIcon() { playIcon.innerHTML = isPlaying() ? '<path d="M4 3h3v10H4V3zm5 0h3v10H9V3z"/>' : '<path d="M3 2v12l11-6-11-6z"/>'; }
+playBtn.addEventListener('click', () => {
+  if (pausedFor) return;
+  isPlaying() ? pause() : play();
+});
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); playBtn.click(); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); setTime(getTime()+3); justScrubbed = true; clearTimeout(scrubResetTimer); scrubResetTimer = setTimeout(() => { justScrubbed = false; }, 1000); }
+  if (e.code === 'ArrowLeft')  { e.preventDefault(); setTime(Math.max(0, getTime()-3)); justScrubbed = true; clearTimeout(scrubResetTimer); scrubResetTimer = setTimeout(() => { justScrubbed = false; }, 1000); }
+});
+
+/* ---------- SPEED CYCLE ---------- */
+const SPEED_STEPS = [1, 1.5, 2];
+let speedIdx = 0;
+const speedPill = document.getElementById('speedPill');
+speedPill.addEventListener('click', () => {
+  speedIdx = (speedIdx + 1) % SPEED_STEPS.length;
+  const s = SPEED_STEPS[speedIdx];
+  averyAudio.playbackRate = s;
+  speedPill.textContent = `${s}×`;
+  speedPill.classList.toggle('fast', s > 1);
+});
+
+/* ---------- AUTOPLAY ---------- */
+function tryAutoplay() {
+  if (!audioAvailable()) return;
+  const p = averyAudio.play();
+  if (p && p.then) {
+    p.then(() => updatePlayIcon())
+     .catch(() => {
+       updatePlayIcon();
+       const startOnce = () => {
+         play();
+         document.removeEventListener('click', startOnce, true);
+         document.removeEventListener('keydown', startOnce, true);
+         document.removeEventListener('touchstart', startOnce, true);
+       };
+       document.addEventListener('click', startOnce, true);
+       document.addEventListener('keydown', startOnce, true);
+       document.addEventListener('touchstart', startOnce, true);
+     });
+  }
+}
+if (audioAvailable()) tryAutoplay();
+else averyAudio.addEventListener('loadedmetadata', tryAutoplay, { once: true });
+
+updateActiveBeat(0); updateScrubber(0); updateTimeDisplay(0);
+</script>
+</body>
+</html>

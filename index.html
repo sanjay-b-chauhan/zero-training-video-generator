@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zero · video generator</title>
+
+<link rel="stylesheet" href="./zds/colors_and_type.css">
+<link rel="stylesheet" href="./styles.css">
+
+<script>
+  if (location.protocol === 'file:') {
+    document.documentElement.dataset.fileProtocol = 'true';
+  }
+</script>
+</head>
+<body class="zero-theme">
+
+<!-- ========= FILE:// PROTOCOL ERROR ========= -->
+<div class="file-protocol-overlay" id="fileProtocolOverlay">
+  <div class="fpo-card">
+    <div class="fpo-icon">⚠</div>
+    <h1 class="fpo-title">You opened this the wrong way.</h1>
+    <p class="fpo-lead">Chrome blocks ES modules from <code>file://</code> URLs. Use one of these:</p>
+    <div class="fpo-options">
+      <div class="fpo-opt"><div class="fpo-opt-num">01</div><div class="fpo-opt-body"><div class="fpo-opt-title">Mac launcher</div><div class="fpo-opt-desc">Double-click <code>run.command</code> in the folder.</div></div></div>
+      <div class="fpo-opt"><div class="fpo-opt-num">02</div><div class="fpo-opt-body"><div class="fpo-opt-title">Terminal</div><code class="fpo-code">python3 -m http.server 8000</code><div class="fpo-opt-desc">Open <a class="fpo-link" href="http://localhost:8000">localhost:8000</a></div></div></div>
+      <div class="fpo-opt"><div class="fpo-opt-num">03</div><div class="fpo-opt-body"><div class="fpo-opt-title">GitHub Pages</div><div class="fpo-opt-desc">See <code>DEPLOY.md</code>.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app">
+
+  <!-- ========= HOMEPAGE ========= -->
+  <section class="view view-home" data-route="home">
+    <header class="topbar">
+      <a href="#/" class="brand">
+        <img src="./zds/assets/zero-monogram-green.svg" alt="" class="brand-mark" />
+        <div class="brand-meta">
+          <div class="brand-name">zero</div>
+          <div class="brand-sub type-mono-label">video generator</div>
+        </div>
+      </a>
+      <nav class="topbar-nav">
+        <span class="cloud-pill" id="cloudPill"><span class="cloud-dot"></span><span id="cloudPillText">local only</span></span>
+        <span class="mock-pill" id="mockPill" hidden><span class="mock-dot"></span>mock mode</span>
+        <button class="btn btn-ghost" id="settingsBtn">Settings</button>
+        <a class="btn btn-brand" href="#/new"><span class="plus">+</span>New video</a>
+      </nav>
+    </header>
+
+    <main class="home-main">
+      <div class="home-head">
+        <div class="kicker type-mono-label">your library</div>
+        <h1 class="display-hero">Concept videos.<br/><span class="hl">Generated</span> by you.</h1>
+        <p class="lead">Each video walks one concept in 2 minutes.</p>
+      </div>
+      <div class="setup-banner" id="setupBanner" hidden>
+        <div class="sb-icon">!</div>
+        <div class="sb-body"><div class="sb-title">One last setup step</div><div class="sb-msg" id="setupBannerMsg"></div></div>
+        <div class="sb-actions" id="setupBannerActions"></div>
+      </div>
+      <div class="home-stats" id="homeStats"></div>
+      <div class="home-grid" id="homeGrid"></div>
+    </main>
+  </section>
+
+  <!-- ========= WORKSPACE ========= -->
+  <section class="view view-workspace" data-route="workspace" hidden>
+    <header class="ws-bar">
+      <div class="ws-bar-left">
+        <a href="#/" class="ws-back">← Library</a>
+        <div class="ws-title">
+          <input type="text" id="wsTitle" class="ws-title-input" placeholder="Untitled concept" />
+          <span class="ws-status" id="wsStatus">draft</span>
+        </div>
+      </div>
+      <div class="ws-bar-right">
+        <span class="mock-pill" id="wsMockPill" hidden><span class="mock-dot"></span>mock</span>
+        <button class="btn btn-ghost" id="wsSettingsBtn">Settings</button>
+        <button class="btn btn-secondary" id="wsDeleteBtn">Delete</button>
+      </div>
+    </header>
+
+    <div class="ws-split" id="wsSplit">
+      <!-- ========= LEFT PANEL ========= -->
+      <aside class="ws-left">
+        <nav class="ws-tabs">
+          <button class="ws-tab is-active" data-tab="brief">
+            <span class="wt-num">01</span>
+            <span class="wt-stack"><span class="wt-name">Brief</span><span class="wt-state"></span></span>
+          </button>
+          <button class="ws-tab is-locked" data-tab="script">
+            <span class="wt-num">02</span>
+            <span class="wt-stack"><span class="wt-name">Script</span><span class="wt-state">locked</span></span>
+          </button>
+          <button class="ws-tab is-locked" data-tab="voice">
+            <span class="wt-num">03</span>
+            <span class="wt-stack"><span class="wt-name">Voice</span><span class="wt-state">locked</span></span>
+          </button>
+          <button class="ws-tab is-locked" data-tab="render">
+            <span class="wt-num">04</span>
+            <span class="wt-stack"><span class="wt-name">Render</span><span class="wt-state">locked</span></span>
+          </button>
+        </nav>
+
+        <!-- ============== BRIEF ============== -->
+        <div class="ws-panel is-active" data-tab="brief">
+          <div class="wp-head">
+            <div class="kicker type-mono-label">step 01 · brief</div>
+            <h2 class="display-md">Three answers. We write the screenplay.</h2>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Concept</span>
+              <button class="info-btn" data-tip="The exact concept being taught. Be specific.">i</button>
+            </label>
+            <input class="input" id="b_concept" placeholder="Root Cause Analysis" />
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Audience focus</span>
+              <button class="info-btn" data-tip="Who is the student. Drives examples + tone.">i</button>
+            </label>
+            <input class="input" id="b_focus" placeholder="UI / UX designers, junior" />
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Your script framework <span class="opt">optional</span></span>
+              <button class="info-btn" data-tip="Paste a framework — AI will follow it.">i</button>
+              <button type="button" class="lbl-action" id="loadSampleFrameworkBtn" data-target="b_outline" title="Insert the Zero default framework">
+                <span class="la-icon">✦</span><span>Use sample</span>
+              </button>
+            </label>
+            <div class="rich-editor" data-rte-id="outline">
+              <div class="re-toolbar">
+                <button type="button" class="re-btn" data-cmd="bold" title="Bold (Cmd+B)"><b>B</b></button>
+                <button type="button" class="re-btn" data-cmd="italic" title="Italic (Cmd+I)"><i>I</i></button>
+                <button type="button" class="re-btn" data-cmd="insertUnorderedList" title="Bullet list">•</button>
+                <button type="button" class="re-btn" data-cmd="insertOrderedList" title="Numbered list">1.</button>
+                <span class="re-divider"></span>
+                <button type="button" class="re-btn re-btn-text" data-cmd="formatBlock-h3" title="Heading">H</button>
+                <button type="button" class="re-btn re-btn-text" data-cmd="removeFormat" title="Clear formatting">⌫</button>
+              </div>
+              <div class="re-content" contenteditable="true" id="b_outline"
+                   data-placeholder="Paste a framework like '1. Mentor Introduction · 2. Concept Explanation · 3. Application Process'. Or raw notes. The AI follows whatever structure you give it. Empty is fine."></div>
+            </div>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Script length <span class="val" id="b_duration_val">130s</span></span>
+              <button class="info-btn" data-tip="Spoken script length. 110–150s is best.">i</button>
+            </label>
+            <input type="range" id="b_duration" min="60" max="240" step="5" value="130" class="slider-mint" />
+            <div class="hint">110–150s is the sweet spot.</div>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Script model</span>
+              <button class="info-btn" data-tip="Pick the AI that drafts the script.">i</button>
+            </label>
+            <div class="provider-select">
+              <button class="ps-pick" data-provider="anthropic"><span class="ps-name">Claude</span><span class="ps-status" id="psStatusAnthropic">no key</span></button>
+              <button class="ps-pick" data-provider="google"><span class="ps-name">Gemini</span><span class="ps-status" id="psStatusGoogle">no key</span></button>
+              <button class="ps-pick" data-provider="ollama"><span class="ps-name">Kimi (Ollama)</span><span class="ps-status" id="psStatusOllama">no key</span></button>
+              <button class="ps-pick is-active" data-provider="mock"><span class="ps-name">Mock</span><span class="ps-status ready">always on</span></button>
+            </div>
+          </div>
+
+          <div class="wp-actions">
+            <button class="btn btn-brand btn-lg" id="generateBtn"><span class="btn-spark">✦</span><span id="generateBtnLabel">Generate screenplay</span></button>
+          </div>
+        </div>
+
+        <!-- ============== SCRIPT (= Framework refiner) ============== -->
+        <div class="ws-panel" data-tab="script">
+          <div class="wp-head">
+            <div class="kicker type-mono-label">step 02 · framework · refine</div>
+            <h2 class="display-md">Tweak the framework. Watch it rewrite.</h2>
+            <p class="lead-sm">The screenplay is on the right. Edit your framework here — change the structure, add a section, ask for a different example — then Regenerate.</p>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Your framework</span>
+              <button class="info-btn" data-tip="The structure AI follows. Editable.">i</button>
+              <button type="button" class="lbl-action" id="loadSampleFrameworkBtnScript" data-target="s_framework" title="Insert the Zero default framework">
+                <span class="la-icon">✦</span><span>Use sample</span>
+              </button>
+            </label>
+            <div class="rich-editor" data-rte-id="frameworkScript">
+              <div class="re-toolbar">
+                <button type="button" class="re-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+                <button type="button" class="re-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+                <button type="button" class="re-btn" data-cmd="insertUnorderedList" title="Bullet list">•</button>
+                <button type="button" class="re-btn" data-cmd="insertOrderedList" title="Numbered list">1.</button>
+                <span class="re-divider"></span>
+                <button type="button" class="re-btn re-btn-text" data-cmd="formatBlock-h3" title="Heading">H</button>
+                <button type="button" class="re-btn re-btn-text" data-cmd="removeFormat" title="Clear formatting">⌫</button>
+              </div>
+              <div class="re-content" contenteditable="true" id="s_framework"
+                   data-placeholder="Edit your framework here. Add sections, change names, drop pieces. Hit Regenerate when ready."></div>
+            </div>
+          </div>
+
+          <div class="regenerate-row">
+            <input type="text" id="refineNotes" class="input regen-input"
+                   placeholder="Optional refinement note: 'use kitchen analogy', 'make example Indian'…" />
+            <button class="btn btn-secondary" id="refineBtn">↻ Regenerate</button>
+          </div>
+
+          <!-- Hidden — kept for backwards-compat with code that reads
+               screenplay text. The actual screenplay now lives only in
+               the right preview iframe. -->
+          <textarea id="screenplayText" hidden></textarea>
+
+          <div class="wp-actions wp-actions-split">
+            <div class="wp-actions-left"></div>
+            <button class="btn btn-brand" id="approveScriptBtn">Continue to Voice →</button>
+          </div>
+        </div>
+
+        <!-- ============== VOICE ============== -->
+        <div class="ws-panel" data-tab="voice">
+          <div class="wp-head">
+            <div class="kicker type-mono-label">step 03 · voice</div>
+            <h2 class="display-md">Pick the voice. Set the direction.</h2>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">ElevenLabs voice ID</span>
+              <button class="info-btn" data-tip="ID of the ElevenLabs voice to narrate.">i</button>
+            </label>
+            <input class="input" id="v_voice_id" placeholder="kdnRe2koJdOK4Ovxn2DI" />
+            <div class="hint"><a class="link" href="https://elevenlabs.io/app/voice-library" target="_blank">Open ElevenLabs library →</a></div>
+          </div>
+
+          <div class="wp-field">
+            <label class="lbl-with-info">
+              <span class="type-mono-label">Voice direction</span>
+              <button class="info-btn" data-tip="How the voice should sound. v3 tags work.">i</button>
+            </label>
+            <div class="rich-editor rich-editor-tall" data-rte-id="instructions">
+              <div class="re-toolbar">
+                <button type="button" class="re-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+                <button type="button" class="re-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+                <button type="button" class="re-btn" data-cmd="insertUnorderedList" title="Bullet list">•</button>
+                <span class="re-divider"></span>
+                <button type="button" class="re-btn re-btn-text" data-cmd="removeFormat" title="Clear formatting">⌫</button>
+              </div>
+              <div class="re-content" contenteditable="true" id="v_instructions"
+                   data-placeholder="Calm mentor. Senior coworker at the whiteboard. Period-period rhythm. Slight smile through the hook. Lean into the number when reading the example. Use brackets for v3 cues like [warm] or [pause] mid-line."></div>
+            </div>
+          </div>
+
+          <details class="advanced-details">
+            <summary><span class="ad-arrow">▸</span><span>Advanced voice parameters</span></summary>
+            <div class="advanced-body">
+              <div class="vt-field">
+                <label class="lbl-with-info">
+                  <span class="type-mono-label">Stability <span class="val" id="v_stab_val">0.78</span></span>
+                  <button class="info-btn" data-tip="Lower = expressive. Higher = consistent.">i</button>
+                </label>
+                <input type="range" class="slider-mint" id="v_stab" min="0" max="1" step="0.01" value="0.78" />
+              </div>
+              <div class="vt-field">
+                <label class="lbl-with-info">
+                  <span class="type-mono-label">Style <span class="val" id="v_style_val">0.10</span></span>
+                  <button class="info-btn" data-tip="Higher = more personality.">i</button>
+                </label>
+                <input type="range" class="slider-mint" id="v_style" min="0" max="1" step="0.01" value="0.10" />
+              </div>
+              <div class="vt-field">
+                <label class="lbl-with-info">
+                  <span class="type-mono-label">Similarity <span class="val" id="v_sim_val">0.82</span></span>
+                  <button class="info-btn" data-tip="How tightly to match the voice character.">i</button>
+                </label>
+                <input type="range" class="slider-mint" id="v_sim" min="0" max="1" step="0.01" value="0.82" />
+              </div>
+              <div class="vt-field">
+                <label class="lbl-with-info">
+                  <span class="type-mono-label">Speed <span class="val" id="v_speed_val">1.00×</span></span>
+                  <button class="info-btn" data-tip="Playback speed. 1.0 is natural.">i</button>
+                </label>
+                <input type="range" class="slider-mint" id="v_speed" min="0.7" max="1.2" step="0.05" value="1.00" />
+              </div>
+              <div class="vt-presets">
+                <button class="preset-btn" data-preset="opener">High-energy opener</button>
+                <button class="preset-btn" data-preset="explain">Explaining calmly</button>
+                <button class="preset-btn" data-preset="reveal">Reveal / payoff</button>
+              </div>
+            </div>
+          </details>
+
+          <div class="wp-actions">
+            <button class="btn btn-brand btn-lg" id="voicePrimaryBtn">
+              <span class="btn-spark">✦</span><span id="voicePrimaryLabel">Generate narration</span>
+            </button>
+          </div>
+          <div class="hint" id="voiceHint">Generate narration first. Audio + caption preview appears on the right.</div>
+        </div>
+
+        <!-- ============== RENDER ============== -->
+        <div class="ws-panel" data-tab="render">
+          <div class="wp-head">
+            <div class="kicker type-mono-label">step 04 · render</div>
+            <h2 class="display-md">Build the video. Watch it.</h2>
+            <p class="lead-sm">Visuals follow the screenplay. Numbers, anatomy cards, method steps animate when Avery names them.</p>
+          </div>
+
+          <div class="render-meta">
+            <div class="rm-row"><span class="rm-k type-mono-label">Concept</span><span class="rm-v" id="rm_concept">—</span></div>
+            <div class="rm-row"><span class="rm-k type-mono-label">Duration</span><span class="rm-v" id="rm_duration">—</span></div>
+            <div class="rm-row"><span class="rm-k type-mono-label">Voice</span><span class="rm-v" id="rm_voice">—</span></div>
+            <div class="rm-row"><span class="rm-k type-mono-label">Audio</span><span class="rm-v" id="rm_audio">—</span></div>
+          </div>
+
+          <div class="wp-actions">
+            <button class="btn btn-brand btn-lg" id="assembleBtn"><span class="btn-spark">▶</span><span id="assembleBtnLabel">Assemble video</span></button>
+            <button class="btn btn-ghost" id="downloadHtmlBtn" hidden>↓ HTML</button>
+            <button class="btn btn-ghost" id="downloadAudioBtn" hidden>↓ MP3</button>
+          </div>
+
+          <div class="refine-block" id="refineBlock" hidden>
+            <div class="kicker type-mono-label">refine the video</div>
+            <p class="lead-sm">Watching it back? Tell us what to change. The full script + voice + visuals will regenerate.</p>
+            <textarea class="input" id="videoRefineNotes" placeholder="Visual on the example felt flat — needs more drama on the number. Voice on the analogy was too fast."></textarea>
+            <button class="btn btn-secondary" id="refineVideoBtn">↻ Regenerate everything</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- splitter handle: drag to resize the left panel up to ~40% -->
+      <div class="ws-splitter" id="wsSplitter" title="Drag to resize"><span></span></div>
+
+      <!-- ========= RIGHT PANEL · LIVE PREVIEW ========= -->
+      <main class="ws-right">
+        <div class="ws-preview-bar" id="wsPreviewBar">
+          <div class="wpb-left" id="wpbToggles"></div>
+          <div class="wpb-right">
+            <span class="wpb-mode" id="wpbMode">mock</span>
+            <button class="btn-icon" id="previewExpandBtn" title="Open in new tab">↗</button>
+          </div>
+        </div>
+        <div class="ws-preview-frame" id="wsPreviewFrame">
+          <iframe id="wsPreview" title="Preview"></iframe>
+        </div>
+      </main>
+    </div>
+  </section>
+
+</div>
+
+<!-- ========= SETTINGS DRAWER ========= -->
+<div class="drawer" id="settingsDrawer" hidden>
+  <div class="drawer-card">
+    <div class="drawer-head">
+      <div><div class="kicker type-mono-label">settings</div><h2 class="display-md">API keys</h2></div>
+      <button class="icon-btn" id="closeSettings">✕</button>
+    </div>
+
+    <div class="drawer-section">
+      <div class="ds-title type-mono-label">Script · pick one</div>
+      <p class="lead-sm">Claude, Gemini, or Kimi (via Ollama Cloud) for the screenplay. Mock works without any key.</p>
+      <div class="field">
+        <label class="type-mono-label">Claude (Anthropic) <span class="val" id="key_anthropic_state">·</span></label>
+        <input type="password" class="input" id="key_anthropic" placeholder="sk-ant-..." />
+        <div class="hint"><a class="link" href="https://console.anthropic.com/settings/keys" target="_blank">Get a key →</a></div>
+      </div>
+      <div class="field">
+        <label class="type-mono-label">Gemini (Google) <span class="val" id="key_google_state">·</span></label>
+        <input type="password" class="input" id="key_google" placeholder="AIza..." />
+        <div class="hint"><a class="link" href="https://aistudio.google.com/apikey" target="_blank">Free key →</a></div>
+      </div>
+      <div class="field">
+        <label class="type-mono-label">Kimi K2 · Ollama Cloud <span class="val" id="key_ollama_state">·</span></label>
+        <input type="password" class="input" id="key_ollama" placeholder="ollama.com API key" />
+        <div class="hint"><a class="link" href="https://ollama.com/settings/keys" target="_blank">Get a key →</a> · runs Kimi K2, GPT-OSS, Qwen, DeepSeek</div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="ds-title type-mono-label">Voice (ElevenLabs)</div>
+      <p class="lead-sm">For real audio narration on top of the video.</p>
+      <div class="field">
+        <label class="type-mono-label">ElevenLabs <span class="val" id="key_elevenlabs_state">·</span></label>
+        <input type="password" class="input" id="key_elevenlabs" placeholder="..." />
+        <div class="hint"><a class="link" href="https://elevenlabs.io/app/settings/api-keys" target="_blank">Get a key →</a></div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="ds-title type-mono-label">Supabase <span class="opt">cloud sync</span></div>
+      <p class="lead-sm"><a class="link" href="./SETUP.md" target="_blank">Setup walkthrough →</a></p>
+      <div class="field">
+        <label class="type-mono-label">Project URL <span class="val" id="sb_url_state">·</span></label>
+        <input type="text" class="input" id="sb_url" placeholder="https://xxxxx.supabase.co" />
+      </div>
+      <div class="field">
+        <label class="type-mono-label">Anon / publishable key <span class="val" id="sb_key_state">·</span></label>
+        <input type="password" class="input" id="sb_key" placeholder="eyJ... or sb_publishable_..." />
+      </div>
+      <button class="btn btn-secondary" id="testSupabaseBtn">Test connection</button>
+      <div class="hint" id="supabaseStatus"></div>
+    </div>
+
+    <div class="drawer-actions">
+      <button class="btn btn-secondary" id="closeSettings2">Cancel</button>
+      <button class="btn btn-brand" id="saveSettingsBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========= DELETE CONFIRM ========= -->
+<div class="dialog" id="confirmDialog" hidden>
+  <div class="dialog-card">
+    <h3 class="display-md" id="confirmTitle">Delete?</h3>
+    <p class="lead-sm" id="confirmMsg"></p>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========= LOADING ========= -->
+<div class="loader" id="loader" hidden>
+  <div class="loader-card">
+    <div class="lc-spinner"></div>
+    <div class="lc-msg" id="loaderMsg">Working…</div>
+    <div class="lc-sub type-mono-label" id="loaderSub"></div>
+    <button class="btn btn-ghost lc-cancel" id="loaderCancel" hidden>Cancel</button>
+  </div>
+</div>
+
+<!-- ========= TOAST ========= -->
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
