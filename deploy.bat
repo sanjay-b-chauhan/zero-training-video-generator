@@ -88,12 +88,26 @@ git remote get-url origin >nul 2>nul && (
 )
 
 REM ---- 5. Enable Pages ----------------------------------------------------
+REM The Pages API requires a NESTED JSON body. Using -f source.branch flat
+REM fields makes the API reject it silently. We write JSON to a temp file
+REM and pipe it via --input.
 echo      Enabling GitHub Pages...
-gh api -X POST "/repos/%GH_USER%/%REPO_NAME%/pages" -f source.branch=main -f source.path=/ >nul 2>nul
+echo {"build_type":"legacy","source":{"branch":"main","path":"/"}} > "%TEMP%\pages.json"
+gh api --silent --method POST -H "Accept: application/vnd.github+json" "/repos/%GH_USER%/%REPO_NAME%/pages" --input "%TEMP%\pages.json" >nul 2>nul
 if errorlevel 1 (
-  gh api -X PUT "/repos/%GH_USER%/%REPO_NAME%/pages" -f source.branch=main -f source.path=/ >nul 2>nul
+  gh api --silent --method PUT -H "Accept: application/vnd.github+json" "/repos/%GH_USER%/%REPO_NAME%/pages" --input "%TEMP%\pages.json" >nul 2>nul
 )
-echo    Pages enabled
+del "%TEMP%\pages.json" >nul 2>nul
+
+REM Verify
+gh api "/repos/%GH_USER%/%REPO_NAME%/pages" --jq ".html_url" >nul 2>nul
+if errorlevel 1 (
+  echo    !  Pages config not yet readable. If the URL doesn't load:
+  echo       open https://github.com/%GH_USER%/%REPO_NAME%/settings/pages
+  echo       and set Source = Deploy from a branch = main = /
+) else (
+  echo    Pages enabled and verified
+)
 
 REM ---- 6. Done ------------------------------------------------------------
 echo.

@@ -110,20 +110,37 @@ fi
 echo ""
 say "Enabling GitHub Pages…"
 
-# Try to create Pages config; if it already exists we update it instead.
-if ! gh api -X POST "/repos/$USER/$REPO_NAME/pages" \
-      -f source.branch=main -f source.path=/ >/dev/null 2>&1; then
-  gh api -X PUT "/repos/$USER/$REPO_NAME/pages" \
-      -f source.branch=main -f source.path=/ >/dev/null 2>&1 || true
+# The Pages API requires a NESTED JSON body, not flat form fields.
+# Using `-f source.branch=main` sends a literal field "source.branch" which
+# GitHub rejects silently. Pipe proper JSON via stdin instead.
+PAGES_JSON='{"build_type":"legacy","source":{"branch":"main","path":"/"}}'
+
+PAGES_URL=""
+
+# Try POST first (creates Pages config). 422 means it already exists →
+# fall through to PUT to update it.
+if gh api --silent --method POST \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/$USER/$REPO_NAME/pages" \
+    --input - <<< "$PAGES_JSON" 2>/dev/null; then
+  ok "Pages config created"
+elif gh api --silent --method PUT \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/$USER/$REPO_NAME/pages" \
+    --input - <<< "$PAGES_JSON" 2>/dev/null; then
+  ok "Pages config updated"
+else
+  printf "  \033[33m!\033[0m  couldn't enable Pages via the API automatically.\n"
+  say "Open this URL and set Source → Deploy from a branch → main → /"
+  say "  https://github.com/$USER/$REPO_NAME/settings/pages"
 fi
 
-# Verify Pages is configured
-if gh api "/repos/$USER/$REPO_NAME/pages" --jq '.html_url' >/dev/null 2>&1; then
-  PAGES_URL=$(gh api "/repos/$USER/$REPO_NAME/pages" --jq '.html_url')
-  ok "Pages enabled"
+# Verify the config actually came back from the API
+if PAGES_URL=$(gh api "/repos/$USER/$REPO_NAME/pages" --jq '.html_url' 2>/dev/null) && [ -n "$PAGES_URL" ]; then
+  ok "verified: $PAGES_URL"
 else
   PAGES_URL="https://$USER.github.io/$REPO_NAME/"
-  ok "Pages requested (URL may take a minute to come live)"
+  printf "  \033[33m!\033[0m  Pages config not yet readable — URL above is the expected one once it propagates.\n"
 fi
 
 # ---- 6. Done --------------------------------------------------------------
